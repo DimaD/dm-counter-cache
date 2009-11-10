@@ -4,8 +4,8 @@ module DataMapper
   # to this option (e.g., :counter_cache => :my_custom_counter.)
   module CounterCacheable
 
-    def self.included(klass)      
-      DataMapper::Associations::ManyToOne.module_eval {
+    def self.included(klass)
+      DataMapper::Associations::ManyToOne.module_eval do
         extend DataMapper::CounterCacheable::ClassMethods
         
         (class << self; self; end).class_eval do
@@ -15,50 +15,47 @@ module DataMapper
           end
         end
 
-      }
+      end
     end
 
     module ClassMethods
       
       def setup_with_counter_caching(name, model, options = {})
-        counter_cache_attribute = options.delete(:counter_cache)
+        perform_counter_cache = options.delete(:counter_cache)
+
         relationship = setup_without_counter_caching(name, model, options)
-        
-        if counter_cache_attribute
-          case counter_cache_attribute
-            when String, Symbol
-              counter_cache_attribute = counter_cache_attribute.to_s
-            else
-              counter_cache_attribute = "#{model.storage_name}_count".to_s
-          end
 
-          model.class_eval <<-EOS, __FILE__, __LINE__            
-            unless method_defined?(:increment_counter_cache_for_#{name})
-              after :create, :increment_counter_cache_for_#{name}
-              after :destroy, :decrement_counter_cache_for_#{name}
-          
-              def increment_counter_cache_for_#{name}
-                return unless ::#{relationship.parent_model}.properties.has_property?(:#{counter_cache_attribute})
-                if self.#{name} && self.class == #{model.name}
-                  self.#{name}.update_attributes(:#{counter_cache_attribute} => self.#{name}.reload.#{counter_cache_attribute}.succ)
-                end
-              end
+        if perform_counter_cache
+          counter_cache_attribute = case perform_counter_cache
+                                    when String, Symbol
+                                      perform_counter_cache.to_sym
+                                    else
+                                      "#{model.storage_name}_count".to_sym
+                                    end
 
-              def decrement_counter_cache_for_#{name}
-                return unless ::#{relationship.parent_model}.properties.has_property?(:#{counter_cache_attribute})
-                if self.#{name} && self.class == #{model.name}
-                  self.#{name}.update_attributes(:#{counter_cache_attribute} => self.#{name}.reload.#{counter_cache_attribute} - 1)
-                end
-              end
-            end
-            
-          EOS
+          model.__send__(:include, InstanceMethods)
+          model.after(:create)  { adjust_counter_cache_for(relationship, counter_cache_attribute, +1) }
+          model.after(:destroy) { adjust_counter_cache_for(relationship, counter_cache_attribute, -1) }
         end
 
         relationship
       end
 
     end # ClassMethods
+
+    module InstanceMethods
+      protected
+      def adjust_counter_cache_for(relationship, counter_cache_attribute, amount)
+        association = get_association(relationship)
+
+        return unless  relationship.parent_model.properties.has_property?(counter_cache_attribute)
+        association.update_attributes(counter_cache_attribute => association.reload.__send__(counter_cache_attribute) + amount)
+      end
+
+      def get_association(relationship)
+        self.__send__("#{relationship.name}_association".to_sym)
+      end # get_association(name)
+    end # InstanceMethods
 
   end # CounterCacheable
 end # DataMapper
