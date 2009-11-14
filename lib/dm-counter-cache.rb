@@ -33,15 +33,35 @@ module DataMapper
                                       "#{model.storage_name}_count".to_sym
                                     end
 
+          model.extend(ModelClassMethods)
           model.__send__(:include, InstanceMethods)
-          model.after(:create)  { adjust_counter_cache_for(relationship, counter_cache_attribute, +1) }
-          model.after(:destroy) { adjust_counter_cache_for(relationship, counter_cache_attribute, -1) }
+
+          model.define_counter_cache_callbacks_for(relationship, counter_cache_attribute)
         end
 
         relationship
       end
 
     end # ClassMethods
+
+    module ModelClassMethods
+      def define_counter_cache_callbacks_for(relationship, counter_cache_attribute)
+        return if defined_counter_cache_callbacks_for?(counter_cache_attribute)
+
+        self.after(:create)  { adjust_counter_cache_for(relationship, counter_cache_attribute, +1) }
+        self.after(:destroy) { adjust_counter_cache_for(relationship, counter_cache_attribute, -1) }
+
+        counter_caches[counter_cache_attribute] = true
+      end # register_counter_cache_callbacks_for(relationship, counter_cache_attribute)
+
+      def defined_counter_cache_callbacks_for?(attribute)
+        !counter_caches[attribute].nil?
+      end # defined_counter_cache_callbacks_for?(attribute)
+
+      def counter_caches
+        @_counter_caches ||= {}
+      end # counter_caches
+    end
 
     module InstanceMethods
       protected
