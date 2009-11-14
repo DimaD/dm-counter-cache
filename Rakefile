@@ -9,17 +9,17 @@ SUDO    = (WINDOWS || JRUBY) ? '' : ('sudo' unless ENV['SUDOLESS'])
 
 require ROOT + 'lib/dm-counter-cache/version'
 
-AUTHOR = 'Saimon Moore'
-EMAIL  = 'saimonmoore [a] gmail [d] com'
-GEM_NAME = 'dm-counter-cache'
+AUTHOR = 'Dmitriy Dzema'
+EMAIL  = 'dima [a] dzema [d] name'
+GEM_NAME = 'dzema_dm-counter-cache'
 GEM_VERSION = DataMapper::CounterCacheable::VERSION
-GEM_DEPENDENCIES = [['dm-core', "~>#{GEM_VERSION}"]]
+GEM_DEPENDENCIES = [['dm-core', "=#{GEM_VERSION}"]]
 GEM_CLEAN = %w[ log pkg coverage ]
 GEM_EXTRAS = { :has_rdoc => true, :extra_rdoc_files => %w[ README.txt LICENSE TODO History.txt ] }
 
 PROJECT_NAME = 'datamapper'
-PROJECT_URL  = "http://github.com/saimonmoore/dm-counter-cache/tree/master/#{GEM_NAME}"
-PROJECT_DESCRIPTION = PROJECT_SUMMARY = 'DataMapper plugin for for counter caches ala ActiveRecord'
+PROJECT_URL  = "http://github.com/DimaD/dm-counter-cache"
+PROJECT_DESCRIPTION = PROJECT_SUMMARY = 'DataMapper plugin for counter caches ala ActiveRecord. Original idea and implementation by Saimon Moore (daimonmoore [a] gmail [d] com)'
 
 [ ROOT, ROOT.parent ].each do |dir|
   Pathname.glob(dir.join('tasks/**/*.rb').to_s).each { |f| require f }
