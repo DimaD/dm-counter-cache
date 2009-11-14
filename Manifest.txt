@@ -7,6 +7,7 @@ TODO
 lib/dm-counter-cache.rb
 lib/dm-counter-cache/version.rb
 spec/integration/dm-counter-cache_spec.rb
+spec/integration/multiple_define_spec.rb
 spec/spec.opts
 spec/spec_helper.rb
 tasks/install.rb

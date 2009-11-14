@@ -1,6 +1,7 @@
 hoe = Hoe.new(GEM_NAME, GEM_VERSION) do |p|
  
-  p.developer(AUTHOR, EMAIL)
+  p.author = AUTHOR
+  p.email  = EMAIL
  
   p.description = PROJECT_DESCRIPTION
   p.summary = PROJECT_SUMMARY

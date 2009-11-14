@@ -9,8 +9,8 @@ SUDO    = (WINDOWS || JRUBY) ? '' : ('sudo' unless ENV['SUDOLESS'])
 
 require ROOT + 'lib/dm-counter-cache/version'
 
-AUTHOR = 'Dmitriy Dzema'
-EMAIL  = 'dima [a] dzema [d] name'
+AUTHOR = ['Saimon Moore', 'Dmitriy Dzema']
+EMAIL  = ['daimonmoore [a] gmail [d] com', 'dima [a] dzema [d] name']
 GEM_NAME = 'dzema_dm-counter-cache'
 GEM_VERSION = DataMapper::CounterCacheable::VERSION
 GEM_DEPENDENCIES = [['dm-core', "=#{GEM_VERSION}"]]
