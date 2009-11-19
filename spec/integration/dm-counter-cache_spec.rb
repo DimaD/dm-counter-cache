@@ -84,4 +84,12 @@ describe DataMapper::CounterCacheable do
     @group.reload.members_count.should == 1    
   end
 
+  it "should not try to adjust counter on nil relationship" do
+    comment = @post.comments.create
+    @post.destroy
+
+    lambda do
+      comment.reload.destroy
+    end.should_not raise_error(NoMethodError)
+  end
 end

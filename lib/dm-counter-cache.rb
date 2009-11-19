@@ -67,6 +67,7 @@ module DataMapper
       protected
       def adjust_counter_cache_for(relationship, counter_cache_attribute, amount)
         association = get_association(relationship)
+        return if association.nil?
 
         return unless  relationship.parent_model.properties.has_property?(counter_cache_attribute)
         association.update_attributes(counter_cache_attribute => association.reload.__send__(counter_cache_attribute) + amount)
