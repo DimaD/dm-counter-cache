@@ -1,3 +1,7 @@
+=== 0.9.12.1 / 2009-11-19
+
+* Fix an error occured when parent object was deleted and child tries to adjust counter cache
+
 === 0.9.12 / 2009-11-15
 
 * Version without class_eval
